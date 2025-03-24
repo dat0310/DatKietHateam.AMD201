@@ -56,7 +56,7 @@
                 }
             },
             async redirect(shortCode) {
-                window.location.href = `http://localhost:5281/api/urlshortener/${shortCode}`;
+                window.location.href = `http://localhost:5281/${shortCode}`;
             }
         }
     };

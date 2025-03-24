@@ -17,7 +17,6 @@ namespace UrlShortenerApi.Controllers
             _context = context;
         }
 
-        // POST: api/urlshortener
         [HttpPost]
         public async Task<IActionResult> CreateShortUrl([FromBody] string originalUrl)
         {
@@ -35,24 +34,10 @@ namespace UrlShortenerApi.Controllers
             _context.ShortUrls.Add(shortUrl);
             await _context.SaveChangesAsync();
 
-            var result = $"http://localhost:5000/{shortCode}"; // Adjust base URL as needed
+            var result = $"http://localhost:5281/{shortCode}";
             return Ok(new { ShortUrl = result });
         }
 
-        // GET: api/urlshortener/{shortCode}
-        [HttpGet("{shortCode}")]
-        public async Task<IActionResult> GetOriginalUrl(string shortCode)
-        {
-            var shortUrl = await _context.ShortUrls
-                .FirstOrDefaultAsync(s => s.ShortCode == shortCode);
-
-            if (shortUrl == null)
-                return NotFound("Short URL not found.");
-
-            return Redirect(shortUrl.OriginalUrl);
-        }
-
-        // GET: api/urlshortener
         [HttpGet]
         public async Task<IActionResult> GetAllUrls()
         {
