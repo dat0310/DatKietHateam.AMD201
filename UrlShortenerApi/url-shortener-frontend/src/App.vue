@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="container">
         <h1>URL Shortener</h1>
         <div class="input-section">
@@ -11,9 +11,15 @@
         <h2>Shortened URLs</h2>
         <ul>
             <li v-for="url in urls" :key="url.id">
-                <a :href="url.shortCode" @click.prevent="redirect(url.shortCode)">
-                    {{ `http://localhost:5281/${url.shortCode}` }}
-                </a> - {{ url.originalUrl }}
+                <div class="url-group">
+                    <a :href="`/${url.shortCode}`" @click.prevent="redirect(url.shortCode)">
+                        {{ `http://localhost:5281/${url.shortCode}` }}
+                    </a>
+                    <a :href="url.originalUrl" target="_blank" class="original-url">
+                        {{ url.originalUrl }}
+                    </a>
+                </div>
+                <button class="delete-btn" @click="deleteUrl(url.shortCode)">Delete</button>
             </li>
         </ul>
     </div>
@@ -57,6 +63,17 @@
             },
             async redirect(shortCode) {
                 window.location.href = `http://localhost:5281/${shortCode}`;
+            },
+            async deleteUrl(shortCode) {
+                try {
+                    const url = `http://localhost:5281/api/urlshortener/${shortCode}`;
+                    console.log('Deleting URL:', url);
+                    await axios.delete(url);
+                    this.fetchUrls();
+                } catch (error) {
+                    console.error('Delete URL Error:', error.message);
+                    alert('Error deleting URL: ' + error.message);
+                }
             }
         }
     };
@@ -95,5 +112,35 @@
 
     li {
         margin: 10px 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
     }
+
+    .url-group {
+        display: flex;
+        gap: 10px; 
+        align-items: center;
+    }
+
+    .original-url {
+        color: #555; 
+        text-decoration: none; 
+    }
+
+        .original-url:hover {
+            text-decoration: underline;
+        }
+
+    .delete-btn {
+        background-color: #ff4444;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        cursor: pointer;
+    }
+
+        .delete-btn:hover {
+            background-color: #cc0000;
+        }
 </style>

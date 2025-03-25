@@ -4,7 +4,7 @@ using UrlShortenerApi.Data;
 
 namespace UrlShortenerApi.Controllers
 {
-    [Route("")] // Root-level routing
+    [Route("")] 
     [ApiController]
     public class RedirectController : ControllerBase
     {
@@ -15,7 +15,7 @@ namespace UrlShortenerApi.Controllers
             _context = context;
         }
 
-        // GET: /jQmyRn
+        
         [HttpGet("{shortCode}")]
         public async Task<IActionResult> RedirectShortUrl(string shortCode)
         {
