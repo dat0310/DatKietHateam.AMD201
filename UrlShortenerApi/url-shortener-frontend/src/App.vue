@@ -8,7 +8,6 @@
         <div v-if="shortenedUrl" class="result">
             Shortened URL: <a :href="shortenedUrl" target="_blank">{{ shortenedUrl }}</a>
         </div>
-        <!-- Optional: Add a link to Swagger -->
         <div class="backend-link">
             <a href="http://localhost:5281/swagger/index.html" target="_blank">View API Documentation</a>
         </div>
@@ -16,8 +15,8 @@
         <ul>
             <li v-for="url in urls" :key="url.id">
                 <div class="url-group">
-                    <a :href="`/${url.shortCode}`" @click.prevent="redirect(url.shortCode)">
-                        {{ `http://localhost:8080/${url.shortCode}` }}
+                    <a :href="`http://localhost:5281/${url.shortCode}`" @click.prevent="redirect(url.shortCode)">
+                        {{ `http://localhost:5281/${url.shortCode}` }}
                     </a>
                     <a :href="url.originalUrl" target="_blank" class="original-url">
                         {{ url.originalUrl }}
@@ -66,8 +65,7 @@
                 }
             },
             async redirect(shortCode) {
-                // This still redirects to the short URL, not Swagger
-                window.location.href = `/${shortCode}`;
+                window.location.href = `http://localhost:5281/${shortCode}`; // Use full URL with backend port
             },
             async deleteUrl(shortCode) {
                 try {

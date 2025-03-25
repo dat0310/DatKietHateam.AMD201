@@ -15,16 +15,15 @@ namespace UrlShortenerApi.Controllers
             _context = context;
         }
 
-        
+
         [HttpGet("{shortCode}")]
-        public async Task<IActionResult> RedirectShortUrl(string shortCode)
+        public IActionResult Get(string shortCode)
         {
-            var shortUrl = await _context.ShortUrls
-                .FirstOrDefaultAsync(s => s.ShortCode == shortCode);
-
+            var shortUrl = _context.ShortUrls.FirstOrDefault(u => u.ShortCode == shortCode);
             if (shortUrl == null)
-                return NotFound("Short URL not found.");
-
+            {
+                return NotFound();
+            }
             return Redirect(shortUrl.OriginalUrl);
         }
     }
