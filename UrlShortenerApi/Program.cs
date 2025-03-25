@@ -25,6 +25,8 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    // Redirect root to Swagger
+    app.MapGet("/", () => Results.Redirect("/swagger/index.html"));
 }
 
 app.UseCors("AllowAll");

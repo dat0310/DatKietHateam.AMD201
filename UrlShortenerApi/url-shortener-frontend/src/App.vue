@@ -8,12 +8,16 @@
         <div v-if="shortenedUrl" class="result">
             Shortened URL: <a :href="shortenedUrl" target="_blank">{{ shortenedUrl }}</a>
         </div>
+        <!-- Optional: Add a link to Swagger -->
+        <div class="backend-link">
+            <a href="http://localhost:5281/swagger/index.html" target="_blank">View API Documentation</a>
+        </div>
         <h2>Shortened URLs</h2>
         <ul>
             <li v-for="url in urls" :key="url.id">
                 <div class="url-group">
                     <a :href="`/${url.shortCode}`" @click.prevent="redirect(url.shortCode)">
-                        {{ `http://localhost:5281/${url.shortCode}` }}
+                        {{ `http://localhost:8080/${url.shortCode}` }}
                     </a>
                     <a :href="url.originalUrl" target="_blank" class="original-url">
                         {{ url.originalUrl }}
@@ -42,7 +46,7 @@
         methods: {
             async shortenUrl() {
                 try {
-                    const response = await axios.post('http://localhost:5281/api/urlshortener', this.originalUrl, {
+                    const response = await axios.post('/api/urlshortener', this.originalUrl, {
                         headers: { 'Content-Type': 'application/json' }
                     });
                     this.shortenedUrl = response.data.shortUrl;
@@ -55,18 +59,19 @@
             },
             async fetchUrls() {
                 try {
-                    const response = await axios.get('http://localhost:5281/api/urlshortener');
+                    const response = await axios.get('/api/urlshortener');
                     this.urls = response.data;
                 } catch (error) {
                     console.error('Fetch URLs Error:', error.message);
                 }
             },
             async redirect(shortCode) {
-                window.location.href = `http://localhost:5281/${shortCode}`;
+                // This still redirects to the short URL, not Swagger
+                window.location.href = `/${shortCode}`;
             },
             async deleteUrl(shortCode) {
                 try {
-                    const url = `http://localhost:5281/api/urlshortener/${shortCode}`;
+                    const url = `/api/urlshortener/${shortCode}`;
                     console.log('Deleting URL:', url);
                     await axios.delete(url);
                     this.fetchUrls();
@@ -105,6 +110,10 @@
         margin-bottom: 20px;
     }
 
+    .backend-link {
+        margin-bottom: 20px;
+    }
+
     ul {
         list-style: none;
         padding: 0;
@@ -119,13 +128,13 @@
 
     .url-group {
         display: flex;
-        gap: 10px; 
+        gap: 10px;
         align-items: center;
     }
 
     .original-url {
-        color: #555; 
-        text-decoration: none; 
+        color: #555;
+        text-decoration: none;
     }
 
         .original-url:hover {
