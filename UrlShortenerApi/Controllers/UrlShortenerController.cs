@@ -20,8 +20,11 @@ namespace UrlShortenerApi.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateShortUrl([FromBody] string originalUrl)
         {
+            if (string.IsNullOrWhiteSpace(originalUrl))
+                return BadRequest("URL cannot be empty.");
+
             if (!IsValidUrl(originalUrl))
-                return BadRequest("Invalid URL format.");
+                return BadRequest("Invalid URL format. Please provide a valid, well-formed URL.");
 
             var shortCode = GenerateShortCode();
             var shortUrl = new ShortUrl
@@ -57,13 +60,22 @@ namespace UrlShortenerApi.Controllers
             _context.ShortUrls.Remove(shortUrl);
             await _context.SaveChangesAsync();
 
-            return NoContent(); 
+            return NoContent();
         }
 
         private bool IsValidUrl(string url)
         {
-            return Uri.TryCreate(url, UriKind.Absolute, out var uriResult)
-                && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
+            // Step 1: Basic URI validation
+            if (!Uri.TryCreate(url, UriKind.Absolute, out var uriResult) ||
+                (uriResult.Scheme != Uri.UriSchemeHttp && uriResult.Scheme != Uri.UriSchemeHttps))
+            {
+                return false;
+            }
+
+            // Step 2: Stricter regex validation
+            // This regex ensures a proper domain structure and valid characters
+            string pattern = @"^(https?:\/\/)(www\.)?([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}(\/[a-zA-Z0-9\-\._~:\/?#[\]@!$&'()*+,;=]*)?$";
+            return Regex.IsMatch(url, pattern);
         }
 
         private string GenerateShortCode()
